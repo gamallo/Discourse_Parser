@@ -1,0 +1,1 @@
+echo Se establecerán disposiciones específicas adicionales de acuerdo con el procedimiento previsto en el artículo 13 de la Directiva 70/156/CEE |./deppattern es  -a -g grammars/discourse-es/grammar-es.dp

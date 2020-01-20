@@ -1,0 +1,126 @@
+conjunction	pattern	example
+porque	VERB [Fc]? CONJ<lemma:porque> VERB	el ministro ratificó el tratado porque hubo acuerdo 
+puesto@que	VERB [Fc]? CONJ<lemma:puesto\@que> VERB	el ministro ratificó el tratado puesto que hubo acuerdo 
+		
+A+sust+de	PRP<lemma:a> NOUN<lemma:propuesta|petición|efecto> PRP<lemma:de>	a propuesta de, a petición de, a efectos de
+Por+razón+de	PRP<lemma:por> NOUN<lemma:razón|causa> PRP<lemma:de>	por razón de la materia, por razón de la seguridad, por razones justificadas
+Por+razón+adj	PRP<lemma:por> NOUN<lemma:razón> ADJ/VERB<mode:p>	por razón justificada
+De acuerdo con	PRP<lemma:de> NOUN<lemma:acuerdo> PRP<con>	
+Adj+por+sust	ADJ PRP<lemma:por> NOUN	afectados por la normativa 
+sust+por+sust	NOUN PRP<lemma:por> NOUN	oficio por resolución 
+sust+por+verbo	NOUN PRP<lemma:por> VERB	interés por tratarse, conjunto por ser 
+verbo+por+sust	VERB PRP<lemma:por> NOUN	se incorporarán por resolución, velará por la preservación 
+	"VSpecL: [VERB] [PRP<lemma:por>] CONJ|PRO<lemma:que> VERB NEXT 
+CregR: VERB PRP<lemma:por> [CONJ|PRO<lemma:que>] VERB
+"	la conserjería velará por que las obras […] atenten 
+Aposiciones		inmuebles que, por su interés cultural 
+Por lo/la que/quien		suscrita por quien asuma; aconsejan su intervención, por lo que los cambios 
+		
+		
+		
+CORPUS		
+A 		A propuesta del Consejero de Cultura 821
+		A propuesta de la persona titular 596
+		a petición de cualquier 600
+		a propuesta de la dirección general 601
+		A los efectos de esta ley 609
+		
+De acuerdo con		De acuerdo con lo previsto 673
+		de acuerdo con el procedimiento: justificación - causa voluntaria 588
+		
+Por lo que		Galicia quiere participar, por lo que se asumen mandatos 580
+		Aconsejan su protección, por lo que los cambios 608
+		debe mantenerse con sus valores ambientales, por lo que las intervenciones 616
+		resolución por la que 626
+		por lo que su separación 626
+		consuetudinarios por los que se rige 629
+		ley y por lo que específicamente corresponda 632
+		ayuntamientos por los que discurre 633
+		por lo que las modificaciones 638
+		por lo que incluirá 643
+		
+Por causa 		Por causa de fuerza mayor 824
+		Por causa de interés 595
+		Expropiarse por causa de interés social 619
+		imprescindible por causa de caso 620
+		por causas de fuerza mayor 636
+		garantizará […] por causa de la conservación 663
+		restricciones que, por causa de la conservación 829
+		
+Por razón de		Consultas que por razón de la materia 588
+		deban protegerse por razón de la seguridad 598
+		el planteamiento general podrá, por razones de oportunidad 605
+		por razones de interés 615
+		por razones de fuerza mayor 640
+		Consultas que por razón de la materia 589
+		deban protegerse por razón de la seguridad 599
+		el planteamiento general podrá, por razones de oportunidad 606
+		
+Por razón + adj		por razones justificadas 610
+		por razón debidamente justificada 636
+		
+Adj+por+sust		identificable por un conjunto 591
+		declarados por decreto 593
+		afectados por la normativa 598
+		establecidas por esta ley 599
+		catalogados por su notable valor 599
+		datos afecados por la normativa 599
+		sustituida por la publicación 600
+		establecidas por esta ley 602
+		amenazados por actos de expolio 603
+		gastos generados por este depósitos 606
+		constituidos por una franja 607
+		protegidos por su valor 609
+		deberán ser sustituidos por elementos análogos 612
+		podrá ser autizado excepcionalmente por la conserjería 612
+		redactadas por un o una 613
+		autizada por la conserjería 621
+		disgregadas por las personas 626
+		afectados por la declaración 626
+		reiterado por el ayuntamiento 627
+		formados por el conjunto 
+		constituidos por vías 633
+		constituida por una franja 633
+		será redactado […] por la conserjería 638
+		autorizados por la conserjería 639
+		ejecutados por personas 639
+		relevante por la calidad 641
+		realizado por un equipo 642
+		autorizado por la conserjería 646
+		concedida por inclumplimiento 649
+		constituido por los de titularidad 659
+		zonas protegidas por su valor 671
+		sancionada por una de las infracciones 677
+		definidas por el trazado 687
+		definidas por las parcelas 687
+		
+sust+por+sust		oficio por resolución motivada 600
+		respeto por sus características esenciales 614
+		la obligación […] por la previsión
+		derecho por partes iguales 652
+		falta de interés […] por la ausencia 658
+		
+Sust+por+verbo		falta de interés […] por tratarse 658
+		Por ser testimonio 821
+		
+Verbo+por+sust		velará por la investigación 585
+		velará por la preservación 629
+		la conserjería […] velará por que las obras 651
+		levantar las actas por posibles 667
+		
+Aposiciones		inmuebles que, por su interés cultural 602
+		órgano […] específico que, por resultar representativo 631
+		soluciones tradicionales que, por su probada experiencia 642
+		titularidad que, por su origen 659
+		no implicaría, por sí sola 686
+		
+Por lo/la que/quien		Galicia quiere participar, por lo que se asumen mandatos 580
+		Aconsejan su protección, por lo que los cambios 608
+		debe mantenerse con sus valores ambientales, por lo que las intervenciones 616
+		resolución por la que 626
+		por lo que su separación 626
+		consuetudinarios por los que se rige 629
+		ley y por lo que específicamente corresponda 632
+		ayuntamientos por los que discurre 633
+		por lo que las modificaciones 638
+		por lo que incluirá 643

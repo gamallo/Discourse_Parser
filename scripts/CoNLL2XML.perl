@@ -1,0 +1,348 @@
+#!/usr/bin/perl
+
+# GERA UM FORMATO XML COM INFORMACAO CONSTITUTIVA-FUNCIONAL, A PARTIR DA SAIDA FORMATO CONLL-fa
+
+$Border="SENT";
+
+$l=1;
+$k=0;
+
+##imprimir primeiras linhas do ficheiro xml:
+
+
+print "<?xml version=\"1\.0\" encoding=\"ISO-8859-1\"?>\n";
+print "<!DOCTYPE SaidaParser SYSTEM \"SaidaParser.dtd\">\n";
+print "<fs>\n";
+
+while ($line = <STDIN>) {
+ chomp $line;
+ if ($line ne "") {
+
+  ($pos, $token, $lemma_orig, $tag, $head, $args, $dep) = split("\t", $line);
+
+  if ( ($CountLines % 100) == 0) {;
+       printf  STDERR "- - - processar linha:(%6d) - - -\r",$CountLines;
+  }
+  $CountLines++;
+
+  $args =~ s/</(/;
+  $args =~ s/>/)/;
+  if ($lemma_orig =~ /@/) {
+      $token = $lemma;
+  }
+  #print STDERR "#$tag#\n";
+   ##construimos os vectores da oracao
+  #if ($tag !~  /^$Border$/ && $dep !~ /[<>]/ && $tag !~ /^F/) {
+   if ($tag !~  /^$Border$/) { 
+     ($lemma) = $args =~ /lemma:([^\|]+)\|/;
+     if ($lemma eq "") {
+	 $lemma = $lemma_orig;
+     }
+     if ($lemma =~ /@/) {
+        $token = $lemma;
+     }
+  
+     $Pos[$l] = $pos ;
+     $Token[$l] = $token ;
+     $Lemma[$l] = $lemma ;
+     $Tag[$l] = $tag ;
+     $Head[$l] = $head ;
+     $Args[$l] = $args ;
+     $Dep[$l] = $dep ;
+
+    ##construimos os hashes de constituintes-head
+     if ($head != 0) {
+      $Const_dep{$head}{$l} = $dep ;
+      $Const_tag{$head}{$l} = $tag ;
+     }
+     $Const{$head}{$l}++;
+
+     ##Contamos o numero de heads diferentes:
+    # if (!defined $Found{$head} && $head != 0) {
+    #    $NumHeads++;
+    #    $Found{$head}++;
+    #    print STDERR "HEAD:::$head\n";
+    # }
+
+     ##Encontrar os Roots e declarar as suas posicoes:
+     if ($head == 0) {
+       $currentHeads[$k] = $l;
+       $Level[$l] = 0;
+       $k++;
+     }
+
+     ##construir as unidades a partir dos head
+     $Unit{$head}{$l}++;
+     $Unit{$head}{$head}++;
+
+     ##construir a oracao fonte:
+     $source .= "$Token[$l] ";
+
+     $l++;
+
+   }
+
+   elsif ($tag =~  /^$Border$/) {
+
+     $source .= "$token" ;
+     $Size = $l;
+
+     print " <source>\n";
+     print "  $source\n";
+     print " </source>\n";
+
+   
+      ##expansao das unidades e niveis de organizacao
+      for ($i=0;$i<=$Size;$i++) {
+           if (defined $Unit{$i}) {
+              # print STDERR "Head: $i## \n";
+             foreach $const (keys %{$Unit{$i}}) {
+                # print STDERR "Head: $i## -- Const: ###$const###\n";
+                $Unit{$i}{$const}++;
+                Expand ($const, $i) ;
+	     }
+          }
+              
+          if (defined $Const{$i}) {
+              # print STDERR "Head: $i## \n";
+              if ($i == 0){
+               foreach $const (keys %{$Const{$i}}) {
+	       
+                  $Level{$i} = 0;
+                 # print STDERR "Head: ##$i## -- Const: ###$const###\n";
+		 # $Level[$const] = $Level[$i]+1;
+                  Expand_level ($const) ;
+	        }
+	     }
+          }   
+	   
+      }
+     ##Construir unidades (cat fun e level) a partir dos head
+
+
+     foreach $head (sort keys %Unit) {
+         if ($head eq "_" || $head == 0) {
+           next
+         }
+         $count=0;
+         foreach $const (sort { $a <=> $b } keys %{$Unit{$head}}) {
+           $Count[$count] = $const;
+           $count++
+           #print STDERR "First: $first## -- Last: $last##  -- HEAD###$head###\n";
+         }
+         $Unit_first = $Pos[$Count[0]] ;
+         $count--;
+         $Unit_last = $Pos[$Count[$count]];
+         $FirstUnit{$Unit_first}{$Unit_last} = $head;
+         $LastUnit{$Unit_last}{$Unit_first} = $head;
+         #print STDERR "First: #$Unit_first# -- Last: #$Unit_last#  -- HEAD###$head### COUNT:#$count#\n";
+
+
+
+     ##Atribuir niveis as unidades a partir do head e baixar um nivel ao head
+         $UnitLevel[$head] = $Level[$head];
+         $Level[$head]++;
+        # print STDERR "HEAD: #$head# Lema:#$Lemma[$head]# LEVEL: #$Level[$head]#\n";
+
+
+##################################################################################
+###################Regras de atribuicao de unidade################################
+##################################################################################
+        # print STDERR "##$Dep[$head]## -- ##$Tag[$head]##\n";
+
+     ##Regra da clausula finita com funcao de Statement"
+        if ($Dep[$head] eq "ROOT" && ($Tag[$head] eq "VERB" || $Args[$head] =~ /coord:verb/) &&
+            $Args[$head] =~ /mode:[^NGP]/) {
+
+             $Unit_dep{$head} = "STA" ;
+             $Unit_tag{$head} = "fcl" ;
+             $Dep[$head] = "P";
+	}
+
+        ##Regra da nominal phrase"
+        elsif ($Tag[$head] eq "NOUN" || $Args[$head] =~ /coord:noun/) {
+
+             $Unit_dep{$head} = "$Dep[$head]" ;
+             $Unit_tag{$head} = "np" ;
+             $Dep[$head] = "H";
+
+	}
+
+        ##Regra da prepositional phrase"
+        elsif ($Tag[$head] eq "PRP") {
+
+             $Unit_dep{$head} = "$Dep[$head]" ;
+             $Unit_tag{$head} = "pp" ;
+             $Dep[$head] = "H";
+	}
+
+       #if ($head !=0 && $head ne "_") {
+
+	elsif ($Dep[$head] =~/^Bipolar/ && $Tag[$head] eq "CONJ") {
+
+             $Unit_dep{$head} = "STA-$Dep[$head]" ;
+             $Unit_tag{$head} = "fcl" ;
+             $Dep[$head] = "P";
+
+
+	}
+
+       elsif ($Dep[$head] =~/^(Adjn|Term|Dobj|Subj|Iobj)/ && $Tag[$head] eq "VERB") {
+
+             $Unit_dep{$head} = "STA-Sub" ;
+             $Unit_tag{$head} = "fcl" ;
+             $Dep[$head] = "P";
+
+
+	}
+	 
+      }
+
+##################################################################################
+###################FIM Regras de atribuicao de unidade############################
+##################################################################################
+
+
+##########Print saida xml########################################################
+
+     print "  <extract>\n";
+     for ($i=1;$i<$Size;$i++) {
+      
+       if (defined $FirstUnit{$i}) {
+          foreach  $last (sort { $b <=> $a } keys %{$FirstUnit{$i}}) {
+            $head = $FirstUnit{$i}{$last} ;
+            $spaces = numberSpaces ($UnitLevel[$head]);
+	    if ($Unit_tag{$head} =~ /^F/ || $Unit_dep{$head} =~ /[<>]/) {next}
+            print "   ${spaces}<tree cat=\"$Unit_tag{$head}\" fun=\"$Unit_dep{$head}\" level=\"$UnitLevel[$head]\">\n";
+          }
+        }
+       $spaces = numberSpaces ($Level[$i]);
+       if ($Tag[$i]=~ /^F/ || $Dep[$i] =~ /[<>]/) {next}
+       print "   ${spaces}<t cat=\"$Tag[$i]\" lemma=\"$Lemma[$i]\" args=\"$Args[$i]\" fun=\"$Dep[$i]\" level=\"$Level[$i]\">$Token[$i]<\/t>\n";
+        if (defined $LastUnit{$i}) {
+          foreach  $first (sort { $b <=> $a } keys %{$LastUnit{$i}}) {
+            $head = $LastUnit{$i}{$first} ;
+            $spaces = numberSpaces ($UnitLevel[$head]);
+           # print "   ${spaces}</tree> --cat=\"$Unit_tag{$head}\" fun=\"$Unit_dep{$head}\" level=\"$UnitLevel[$head]\">\n";
+	    print "   ${spaces}</tree>\n";
+          }
+        }
+
+     }
+     print "  </extract>\n";
+     Initialize();
+
+   }
+
+ }
+
+}
+
+print "</fs>\n";
+
+
+##########Funcoes###############
+
+sub Expand {
+
+    my ($c, $h) = @_ ;
+
+    if (defined $Unit{$c} ) {
+    #print STDERR "FUNC: ---$c---$h-- ### CONST: ---$c ---- $sub_c\n";
+       foreach $sub_c (keys %{$Unit{$c}}) {
+	 if ($sub_c != $c && !defined $Unit{$h}{$sub_c} ) {
+         #if ($sub_c != $c) {
+               #print STDERR "FUNC: ---$c---$h-- ### CONST: ---$c ---- $sub_c\n";
+                $Unit{$h}{$sub_c}++;
+                Expand ($sub_c, $h) ;
+	 }
+	}
+     }
+
+    else {
+     return 1
+   }
+}
+
+sub Expand_level {
+
+    my ($c) = @_ ;
+   
+    if (defined $Const{$c} ) {
+    #print STDERR "FUNC: ---$c---\n";
+       foreach $sub_c (keys %{$Const{$c}}) {
+	 if ($sub_c != $c) {
+                $Level[$sub_c] = $Level[$c]+1;
+              #  print STDERR "FUNC2: ---#$c#-#$Level{$c}# // #$sub_c#-#$Level{$sub_c}#\n";
+                Expand_level ($sub_c) ;
+
+	 }
+	}
+     }
+
+    else {
+     return 1
+   }
+}
+
+
+sub numberSpaces {
+    my ($x) = @_ ;
+
+    my $i;
+    my $result="";
+    for ($i=1;$i<=$x;$i++) {
+        $result .= " ";
+        #print STDERR "SPACE: #$result# NIVEL: #$x#\n";
+    }
+    return $result;
+}
+
+sub Initialize {
+   my $i=0 ;
+   my $x="";
+  for ($i=0;$i<=$#Pos;$i++) {
+    delete $Pos[$i];
+    delete $Token[$i];
+    delete $Lemma[$i] ;
+    delete $Tag[$i] ;
+    delete $Head[$i] ;
+    delete $currentHeads[$i];
+    delete $Args[$i] ;
+    delete $Dep[$i] ;
+    delete $Level[$i] ;
+    delete $UnitLevel[$i] ;
+    delete $Count[$i] ;
+  }
+
+   foreach $x (keys %Const_dep) {
+       delete $Const_dep{$x}
+   }
+   foreach $x (keys %Const_tag) {
+      delete $Const_tag{$x}
+   }
+   foreach $x (keys %Unit) {
+      delete $Unit{$x}
+   }
+    foreach $x (keys %Const) {
+      delete $Const{$x}
+   }
+   foreach $x (keys %FirstUnit) {
+      delete $FirstUnit{$x}
+   }
+   foreach $x (keys %LastUnit) {
+      delete $LastUnit{$x}
+   }
+   foreach $x (keys %Unit_tag) {
+      delete $Unit_tag{$x}
+   }
+   foreach $x (keys %Unit_dep) {
+      delete $Unit_dep{$x}
+   }
+  $source="";
+  $NumHeads=0;
+  $k=0;
+  $l=1 ;
+
+  return 1
+}
