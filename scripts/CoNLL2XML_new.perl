@@ -2,6 +2,12 @@
 
 # GERA UM FORMATO XML COM INFORMACAO CONSTITUTIVA-FUNCIONAL, A PARTIR DA SAIDA FORMATO CONLL-fa
 
+binmode STDIN, ':utf8';
+binmode STDOUT, ':utf8';
+use open qw(:std :utf8);
+use utf8;
+
+
 $Border="SENT";
 
 $l=1;

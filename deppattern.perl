@@ -17,6 +17,8 @@ use File::Basename;
 binmode STDIN, ':utf8';
 binmode STDOUT, ':utf8';
 binmode STDERR, ':utf8';
+use open qw(:std :utf8);
+
 use utf8;
 
 push @ARGV, "-h" if $#ARGV < 0;
