@@ -61,7 +61,7 @@ The same syntax with `deppattern.bat` command.
 
 Return a syntactic analysis with discourse information for Spanish in -xml format (constituent analysis):
 ```
-echo "me gusta la montaña porque respiro aire puro" | ./deppattern es  -g grammars/discourse-es/grammar-es.dp
+echo "me gusta la montaña porque respiro aire puro" |./deppattern es -g grammars/discourse-es/grammar-es.dp -xml
 ```
 
 Return a syntactic analysis for Spanish in -a format (by using the by default Spanish parser):
