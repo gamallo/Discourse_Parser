@@ -1,4 +1,4 @@
-# DepPattern parsers and grammar compiler
+# Discourse Analysis Based on DepPattern Grammars
 
 ## DESCRIPTION
 This software contains a rule-based, dependency-based syntactic parsers for Spanish (but it could be expanded to English, Galician, and Portuguese), along with specific rules to identify discourse relations between clause, such as cause, opposition, etc.  The parsers were implemented in PERL and are stored in the `parsers` folder. They were generated from dependency grammars, stored in the `grammars` folder. 
