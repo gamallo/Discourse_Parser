@@ -59,32 +59,27 @@ The same syntax with `deppattern.bat` command.
 
 ## EXAMPLES
 
-Return a syntactic analysis for Portuguese in -a format:
+Return a syntactic analysis with discourse information for Spanish in -xml format (constituent analysis):
 ```
-./deppattern pt -f test/test-pt -a
+echo "me gusta la montaña porque respiro aire puro" | ./deppattern es  -g grammars/discourse-es/grammar-es.dp
 ```
 
-Return a syntactic analysis for English in -conll format:
+Return a syntactic analysis for Spanish in -a format (by using the by default Spanish parser):
+```
+./deppattern es -f test/test-es -a
+```
+
+Return a syntactic analysis for English in -conll format (by using the by default English parser):
 ```
 ./deppattern en -f test/test-en -conll
-```
-
-Generate a parser (parser.perl) from the English grammar using the compiler:
-
-```
-./deppattern en -g grammars/grammar-devel-en/grammar-en.dp`
 ```
 
 Return a syntactic analysis using the Spanish grammar, with -conll format:
 
 ```
-./deppattern en -f test/test-es -g grammars/grammar-devel-es/grammar-es.dp -conll`
+./deppattern en -f test/test-es -g grammars/discourse-es/grammar-es.dp -conll`
 ```
 
-You also may enter the input text in pipeline:
-```
-echo "Mary is eating fish." |./deppattern en -a
-```
 
 ## Configuration files
 Each grammar directory must contain the following files: 
@@ -95,16 +90,6 @@ Each grammar directory must contain the following files:
 * lexical_classes.conf
  
 For more details, look up the  [tutorial of DepPattern](http://gramatica.usc.es/pln/tools/deppattern/html_tutorial/tutorialGrammar.html)
-
-## MetaRomance
-One of the parsers provided by the package is MetaRomance, made of Universal Dependencies for Romance languages, and one of the systems that participated at CoNLL-2017 Shared Task on multilingual dependency parsing. If the input text is in Portuguese, the command to run MetaRomance would be the following:
-
-```
-    ./deppattern pt -m -f tests/test-pt -a
-```
-More information in:
-
-Garcia, Marcos and Pablo Gamallo (2017) "A rule-based system for cross-lingual parsing of Romance languages with Universal Dependencies", ConLL-2017, Vancouver, Canada.
 
 
 ## INPUT FILE
@@ -182,6 +167,7 @@ Pablo Gamallo, Isaac González, Marcos Garcia, César Piñeiro, Grupo ProLNat@GE
 
 >Gamallo, P., González, I. 2012. DepPattern: A Multilingual Dependency Parser, Demo Session of the International Conference on Computational Processing of the Portuguese Language (PROPOR 2012) , April 17-20, Coimbra, Portugal. 
 
+>Gamallo, Pablo, Marcos Garcia (2018) Dependency parsing with finite state transducers and compression rules, Information Processing & Management 54(6), pp. 1244-1261. DOI: https://doi.org/10.1016/j.ipm.2018.05.003, ISSN: 0306-4573.
 
 
 	
