@@ -18,12 +18,13 @@ binmode STDIN, ':utf8';
 binmode STDOUT, ':utf8';
 binmode STDERR, ':utf8';
 use open qw(:std :utf8);
-
 use utf8;
+use lib dirname(__FILE__);
 
 push @ARGV, "-h" if $#ARGV < 0;
 
 #Linguakit dependencies
+push(@INC, dirname(__FILE__)."/lib");
 my $deps = 1;
 if (!eval{require Getopt::ArgParse;}){
 	warn "Please install Getopt::ArgParse module: cpan Getopt::ArgParse\n";
@@ -131,7 +132,8 @@ elsif ($META){
 }
 $PARSER .= ".perl" if $PARSER !~ /\.perl$/;
 
-my $mode = ($args->xml ? "-xml" : $args->conll ? "-conll" : ($args->fa ? "-fa" : ($args->c ? "-c" : ($args->a ? "-a" : ""))));
+#my $mode = ($args->conll ? "-conll" : ($args->fa ? "-fa" : ($args->c ? "-c" : ($args->a ? "-a" : ""))));
+my $mode = ($args->xml ? "-xml" : ($args->conll ? "-conll" : ($args->fa ? "-fa" : ($args->c ? "-c" : ($args->a ? "-a" : "")))));
 
 if($mode){
 	if(! -e $PARSER){
@@ -146,33 +148,34 @@ if($mode){
 	do $FILTER;
 	do $PARSER;
 
+	
 	if ($mode !~ /(-conll|-xml)/) {
-		while(my $line = <$input>){
-			my $list = Parser::parse(AdapterFreeling::adapter(Tagger::tagger(Ner::ner(Splitter::splitter(Tokens::tokens(Sentences::sentences([$line])))))),  $mode);
-			for my $result (@{$list}){
-				print "$result\n";
-			}
+	    while(my $line = <$input>){
+		my $list = Parser::parse(AdapterFreeling::adapter(Tagger::tagger(Ner::ner(Splitter::splitter(Tokens::tokens(Sentences::sentences([$line])))))),  $mode);
+		for my $result (@{$list}){
+		    print "$result\n";
 		}
+	    }
 	} elsif ($mode eq "-conll"){
-		do $CONLL;
-		while(my $line = <$input>){
-			my $list =  CONLL::conll(Parser::parse(AdapterFreeling::adapter(Tagger::tagger(Ner::ner(Splitter::splitter(Tokens::tokens(Sentences::sentences([$line])))))), "-fa"));
-			for my $result (@{$list}){
-				print "$result\n";
-			}
+	    do $CONLL;
+	    while(my $line = <$input>){
+		my $list =  CONLL::conll(Parser::parse(AdapterFreeling::adapter(Tagger::tagger(Ner::ner(Splitter::splitter(Tokens::tokens(Sentences::sentences([$line])))))), "-fa"));
+		for my $result (@{$list}){
+		    print "$result\n";
 		}
+	    }
 	}elsif ($mode eq "-xml"){
 	    do $CONLL;
 	    my $result2 ="";
-		while(my $line = <$input>){
-			my $list =  CONLL::conll(Parser::parse(AdapterFreeling::adapter(Tagger::tagger(Ner::ner(Splitter::splitter(Tokens::tokens(Sentences::sentences([$line])))))), "-fa"));
-			for my $result (@{$list}){
-			    $result2 .= "$result\n";
-			}
+	    while(my $line = <$input>){
+		my $list =  CONLL::conll(Parser::parse(AdapterFreeling::adapter(Tagger::tagger(Ner::ner(Splitter::splitter(Tokens::tokens(Sentences::sentences([$line])))))), "-fa"));
+		for my $result (@{$list}){
+		    $result2 .= "$result\n";
 		}
-	        #print STDERR "$result2\n";
-		my $saida_xml = `echo \"$result2\" |./scripts/CoNLL2XML_new.perl`;
-		print "$saida_xml\n";
+	    }
+	    #print STDERR "$result2\n";
+	    my $saida_xml = `echo \"$result2\" |./scripts/CoNLL2XML_new.perl`;
+	    print "$saida_xml\n";
 	}
 
 }
