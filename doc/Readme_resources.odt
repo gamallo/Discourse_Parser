@@ -1,0 +1,43 @@
+﻿HOW TO CREATE NEW DISCOURSE RULES WITH DEPPATTERN
+
+
+1. DEFINE A NEW LOCUTION
+
+You have to define a new locution in grammar/grammar-es.dp after the line:
+
+##CAUSAIS
+
+For example, the causal locution "debido a que" is defined as follows:
+
+>: [X<token:[Dd]ebido>] X<lemma:a> X<lemma:que>
+NEXT
+>: X<token:[Dd]ebido> X<lemma:a> [X<lemma:que>]
+Add: tag:CONJ,type:S,loc:causal
+%
+
+This rule creates the unit "debido@a@que" which is assigned the tag CONJ(unction), the conjunction type S(ubordinate), and the locution type 'causal'.  
+
+2. CREATE A RULE FOR THE LOCUTION
+
+Rules for locutions and discursive dependencies between clauses must be written after the line:
+########DEPENDENCIAS COM CONJUNÇOES BIPOLARES###############
+
+A rule containing a causal locution (loc:causal) can be defined as follows:
+
+BipolarCausal2R: VERB [Fc]? CONJ<loc:causal> VERB
+%
+
+It means the following: a BipolarCausal dependency occurs when there is a VERB followed by a CONJ(uction) that is a causal locution, and followed by another VERB. A comma (Fc) can be (optionally) found between the first verb and the conjunction. An example of sentence with this structure is:
+
+"Se arruinó debido a que perdió el empleo"
+
+3. DECLARE THE DEPENDENCY NAME
+The dependency must be declared in the file:
+
+ ./grammars/discourse-es/dependencies.conf
+
+Each rule is declared in two columns. For instance:
+Rule code		DepPattern type	
+BipolarCausal2R 	HeadRelDep
+
+
